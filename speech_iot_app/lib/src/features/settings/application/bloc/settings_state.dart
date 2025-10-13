@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
 
 enum ConnectionStatus { initial, testing, success, failure }
 
+@immutable
 final class SettingsState extends Equatable {
   final String host;
   final String port;

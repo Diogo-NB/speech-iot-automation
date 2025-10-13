@@ -10,21 +10,26 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc({required AppConfig appConfig})
     : _appConfig = appConfig,
-      super(const SettingsState()) {
-    on<HostChanged>(
+      super(
+        SettingsState(
+          host: appConfig.state.baseHttpUrl.host,
+          port: appConfig.state.baseHttpUrl.port.toString(),
+        ),
+      ) {
+    on<HostChangedEvent>(
       (e, emit) => emit(state.copyWith(host: e.host)),
       transformer: debounce(const Duration(milliseconds: 300)),
     );
-    on<PortChanged>(
+    on<PortChangedEvent>(
       (e, emit) => emit(state.copyWith(port: e.port)),
       transformer: debounce(const Duration(milliseconds: 300)),
     );
-    on<TestConnectionRequested>(_onTestConnection);
-    on<SaveSettingsRequested>(_onSaveSettings);
+    on<TestConnectionRequestedEvent>(_onTestConnection);
+    on<SaveSettingsRequestedEvent>(_onSaveSettings);
   }
 
   Future<void> _onTestConnection(
-    TestConnectionRequested event,
+    TestConnectionRequestedEvent event,
     Emitter<SettingsState> emit,
   ) async {
     emit(state.copyWith(status: ConnectionStatus.testing));
@@ -32,6 +37,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       final host = state.host.trim();
       final port = state.port.trim();
+      print('Saving settings with host: $host and port: $port');
 
       if (host.isEmpty || int.tryParse(port) == null) {
         emit(state.copyWith(status: ConnectionStatus.failure));
@@ -54,7 +60,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   }
 
   void _onSaveSettings(
-    SaveSettingsRequested event,
+    SaveSettingsRequestedEvent event,
     Emitter<SettingsState> emit,
   ) {
     final host = state.host.trim();

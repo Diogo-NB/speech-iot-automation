@@ -5,22 +5,24 @@ sealed class SettingsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-final class HostChanged extends SettingsEvent {
+final class InitializeEvent extends SettingsEvent {}
+
+final class HostChangedEvent extends SettingsEvent {
   final String host;
-  HostChanged(this.host);
+  HostChangedEvent(this.host);
 
   @override
   List<Object?> get props => [host];
 }
 
-final class PortChanged extends SettingsEvent {
+final class PortChangedEvent extends SettingsEvent {
   final String port;
-  PortChanged(this.port);
+  PortChangedEvent(this.port);
 
   @override
   List<Object?> get props => [port];
 }
 
-final class TestConnectionRequested extends SettingsEvent {}
+final class TestConnectionRequestedEvent extends SettingsEvent {}
 
-final class SaveSettingsRequested extends SettingsEvent {}
+final class SaveSettingsRequestedEvent extends SettingsEvent {}

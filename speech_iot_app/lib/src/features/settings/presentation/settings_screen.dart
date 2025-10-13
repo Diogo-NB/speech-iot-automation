@@ -25,7 +25,6 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocConsumer<SettingsBloc, SettingsState>(
-          listenWhen: (p, c) => p.status != c.status,
           listener: (context, state) {
             if (state.status == ConnectionStatus.success ||
                 state.status == ConnectionStatus.failure) {
@@ -42,20 +41,22 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
           },
           builder: (context, state) {
             final bloc = context.read<SettingsBloc>();
+
             return Form(
               child: Column(
                 children: [
                   TextFormField(
                     initialValue: state.host,
+                    keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Host'),
-                    onChanged: (v) => bloc.add(HostChanged(v)),
+                    onChanged: (v) => bloc.add(HostChangedEvent(v)),
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
                     initialValue: state.port,
                     decoration: const InputDecoration(labelText: 'Porta'),
                     keyboardType: TextInputType.number,
-                    onChanged: (v) => bloc.add(PortChanged(v)),
+                    onChanged: (v) => bloc.add(PortChangedEvent(v)),
                   ),
                   const SizedBox(height: 32),
                   SizedBox(
@@ -75,7 +76,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                       ),
                       onPressed: state.status == ConnectionStatus.testing
                           ? null
-                          : () => bloc.add(TestConnectionRequested()),
+                          : () => bloc.add(TestConnectionRequestedEvent()),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -84,7 +85,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.save),
                       label: const Text('Salvar Configurações'),
-                      onPressed: () => bloc.add(SaveSettingsRequested()),
+                      onPressed: () => bloc.add(SaveSettingsRequestedEvent()),
                     ),
                   ),
                 ],

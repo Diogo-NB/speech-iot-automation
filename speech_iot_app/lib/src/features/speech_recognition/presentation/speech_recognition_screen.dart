@@ -44,7 +44,7 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Speech Recognition'),
+        title: const Text('Reconhecimento de voz'),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

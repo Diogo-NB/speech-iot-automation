@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:speech_iot_app/src/features/speech_recognition/data/recognized_speech_result_dto.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
 
 class SpeechRecognitionWebSocketService {
   WebSocketChannel? _channel;
