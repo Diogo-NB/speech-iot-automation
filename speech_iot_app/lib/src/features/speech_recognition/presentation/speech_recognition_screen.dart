@@ -1,12 +1,27 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:speech_iot_app/src/app/app_router.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/application/bloc/speech_recognition_bloc.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/application/bloc/speech_recognition_event.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/application/bloc/speech_recognition_state.dart';
+import 'package:speech_iot_app/src/features/speech_recognition/data/speech_recognition_repository.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/presentation/components/loading_text_indicator.dart';
 
-class SpeechRecognitionScreen extends StatefulWidget {
+@RoutePage()
+class SpeechRecognitionScreen extends StatefulWidget
+    implements AutoRouteWrapper {
   const SpeechRecognitionScreen({super.key});
+
+  @override
+  Widget wrappedRoute(BuildContext context) {
+    return BlocProvider<SpeechRecognitionBloc>(
+      create: (context) => SpeechRecognitionBloc(
+        repository: context.read<SpeechRecognitionRepository>(),
+      ),
+      child: this,
+    );
+  }
 
   @override
   State<SpeechRecognitionScreen> createState() => _SpeechRecognitionState();
@@ -28,6 +43,16 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Speech Recognition'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: 'Settings',
+            onPressed: () => context.pushRoute(const SettingsRoute()),
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey[50],
       body: Container(
         decoration: const BoxDecoration(

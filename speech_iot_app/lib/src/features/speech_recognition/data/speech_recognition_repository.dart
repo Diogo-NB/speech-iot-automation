@@ -7,7 +7,7 @@ import 'package:speech_iot_app/src/features/speech_recognition/data/speech_recog
 import 'package:speech_iot_app/src/features/speech_recognition/domain/recognized_words_model.dart';
 
 class SpeechRecognitionRepository extends Cubit<void> {
-  final AppConfigCubit _appConfig;
+  final AppConfig _appConfig;
   SpeechRecognitionWebSocketService? _ws;
 
   late final StreamSubscription _configSub;

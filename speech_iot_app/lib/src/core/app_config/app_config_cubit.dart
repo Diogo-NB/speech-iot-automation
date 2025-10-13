@@ -1,8 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:speech_iot_app/src/core/app_config/app_config_model.dart';
 
-class AppConfigCubit extends Cubit<AppConfigState> {
-  AppConfigCubit({
+class AppConfig extends Cubit<AppConfigState> {
+  AppConfig({
     required String initialBaseSocketUrl,
     required String initialBaseHttpUrl,
   }) : super(
