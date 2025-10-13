@@ -3,6 +3,7 @@ import 'package:speech_iot_app/src/core/app_config/app_config_cubit.dart';
 import 'package:speech_iot_app/src/core/utils/bloc_event_transformers.dart';
 import 'settings_event.dart';
 import 'settings_state.dart';
+import 'package:http/http.dart' as http;
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final AppConfig _appConfig;
@@ -27,14 +28,29 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     Emitter<SettingsState> emit,
   ) async {
     emit(state.copyWith(status: ConnectionStatus.testing));
-    await Future.delayed(const Duration(seconds: 1));
 
-    final success = state.host.isNotEmpty && int.tryParse(state.port) != null;
-    emit(
-      state.copyWith(
-        status: success ? ConnectionStatus.success : ConnectionStatus.failure,
-      ),
-    );
+    try {
+      final host = state.host.trim();
+      final port = state.port.trim();
+
+      if (host.isEmpty || int.tryParse(port) == null) {
+        emit(state.copyWith(status: ConnectionStatus.failure));
+        return;
+      }
+
+      final uri = Uri.parse('http://$host:$port/health-check/');
+      final response = await http.get(uri).timeout(const Duration(seconds: 5));
+
+      final success = response.statusCode == 200;
+
+      emit(
+        state.copyWith(
+          status: success ? ConnectionStatus.success : ConnectionStatus.failure,
+        ),
+      );
+    } catch (_) {
+      emit(state.copyWith(status: ConnectionStatus.failure));
+    }
   }
 
   void _onSaveSettings(
