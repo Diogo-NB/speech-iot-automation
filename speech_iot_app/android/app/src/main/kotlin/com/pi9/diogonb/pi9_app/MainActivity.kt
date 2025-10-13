@@ -1,4 +1,4 @@
-package com.speech_iot.diogonb.speech_iot_app
+package com.speech_iot.diogonb
 
 import io.flutter.embedding.android.FlutterActivity
 
