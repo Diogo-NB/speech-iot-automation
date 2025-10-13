@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(title: const Text('Configurações')),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: BlocConsumer<SettingsBloc, SettingsState>(
@@ -33,7 +33,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(
-                    success ? 'Connection successful!' : 'Connection failed',
+                    success ? 'Conexão bem-sucedida!' : 'Falha na conexão',
                   ),
                   backgroundColor: success ? Colors.green : Colors.red,
                 ),
@@ -53,7 +53,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                   const SizedBox(height: 16),
                   TextFormField(
                     initialValue: state.port,
-                    decoration: const InputDecoration(labelText: 'Port'),
+                    decoration: const InputDecoration(labelText: 'Porta'),
                     keyboardType: TextInputType.number,
                     onChanged: (v) => bloc.add(PortChanged(v)),
                   ),
@@ -70,8 +70,8 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                           : const Icon(Icons.wifi_tethering),
                       label: Text(
                         state.status == ConnectionStatus.testing
-                            ? 'Testing...'
-                            : 'Test Connection',
+                            ? 'Testando...'
+                            : 'Testar Conexão',
                       ),
                       onPressed: state.status == ConnectionStatus.testing
                           ? null
@@ -83,7 +83,7 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.save),
-                      label: const Text('Save Settings'),
+                      label: const Text('Salvar Configurações'),
                       onPressed: () => bloc.add(SaveSettingsRequested()),
                     ),
                   ),
