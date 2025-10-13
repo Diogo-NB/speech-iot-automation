@@ -9,31 +9,27 @@ class SpeechRecognitionWebSocketService {
   final Uri url;
 
   SpeechRecognitionWebSocketService(Uri baseUrl)
-    : url = Uri(
-        scheme: 'ws',
-        host: baseUrl.host,
-        port: baseUrl.port,
-        path: 'speech-recognition',
-      );
+    : url = baseUrl.replace(path: 'speech-recognition');
 
   Stream get stream => _channel!.stream;
 
   bool get isConnected => _channel != null;
 
-  void connect() {
-    if (_channel != null) return;
+  void connect() async {
+    if (isConnected) {
+      return;
+    }
 
-    _channel = WebSocketChannel.connect(url);
-
-    _channel!.stream.listen(
-      (event) {},
-      onError: (error) {
-        disconnect();
-      },
-      onDone: () {
-        disconnect();
-      },
-    );
+    _channel = WebSocketChannel.connect(url)
+      ..stream.listen(
+        (event) {},
+        onError: (error) {
+          disconnect();
+        },
+        onDone: () {
+          disconnect();
+        },
+      );
   }
 
   void send(RecognizedSpeechResultDto dto) {
@@ -46,8 +42,14 @@ class SpeechRecognitionWebSocketService {
     _channel!.sink.add(message);
   }
 
-  void disconnect() {
-    _channel?.sink.close(status.normalClosure);
-    _channel = null;
+  Future<void> disconnect() async {
+    try {
+      final closeFuture = _channel?.sink.close();
+      await closeFuture?.timeout(const Duration(seconds: 1));
+    } catch (_) {
+      // ignore timeout or network errors
+    } finally {
+      _channel = null;
+    }
   }
 }

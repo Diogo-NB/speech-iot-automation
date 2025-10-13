@@ -142,7 +142,7 @@ class SpeechRecognitionBloc
           ..sort((a, b) => b.confidence.compareTo(a.confidence));
 
     try {
-      _repository.sendRecognizedWords(result);
+      _repository.sendResult(result);
     } catch (e) {
       emit(
         state.copyWith(

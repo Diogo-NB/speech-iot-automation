@@ -59,8 +59,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   ) {
     final host = state.host.trim();
     final port = state.port.trim();
+    final authority = '$host:$port';
 
-    _appConfig.baseHttpUrl = 'http://$host:$port';
-    _appConfig.baseSocketUrl = 'ws://$host:$port';
+    _appConfig.updateUrls('ws://$authority', 'http://$authority');
   }
 }

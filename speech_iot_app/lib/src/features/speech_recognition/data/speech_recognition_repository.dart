@@ -20,12 +20,15 @@ class SpeechRecognitionRepository extends Cubit<void> {
     );
   }
 
-  void _connect(Uri baseUrl) {
-    _ws?.disconnect();
+  Future<void> _connect(Uri baseUrl) async {
+    if (_ws != null) {
+      await _ws!.disconnect();
+    }
+
     _ws = SpeechRecognitionWebSocketService(baseUrl)..connect();
   }
 
-  void sendRecognizedWords(List<RecognizedWordsModel> recognizedWordsList) {
+  void sendResult(List<RecognizedWordsModel> recognizedWordsList) {
     _ws?.send(
       RecognizedSpeechResultDto(
         recognizedWordsList
@@ -38,7 +41,7 @@ class SpeechRecognitionRepository extends Cubit<void> {
   @override
   Future<void> close() async {
     await _configSub.cancel();
-    _ws?.disconnect();
+    await _ws?.disconnect();
     await super.close();
   }
 }
