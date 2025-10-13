@@ -37,7 +37,6 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     try {
       final host = state.host.trim();
       final port = state.port.trim();
-      print('Saving settings with host: $host and port: $port');
 
       if (host.isEmpty || int.tryParse(port) == null) {
         emit(state.copyWith(status: ConnectionStatus.failure));
