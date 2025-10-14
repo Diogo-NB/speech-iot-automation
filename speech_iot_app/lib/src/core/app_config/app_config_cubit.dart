@@ -12,7 +12,7 @@ class AppConfig extends Cubit<AppConfigState> {
          ),
        );
 
-  updateUrls(String socketUrl, String httpUrl) {
+  void updateUrls(String socketUrl, String httpUrl) {
     emit(
       state.copyWith(
         baseSocketUrl: Uri.parse(socketUrl),

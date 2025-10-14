@@ -76,6 +76,7 @@ class SpeechRecognitionBloc
 
     try {
       await _speechToText.listen(
+        localeId: 'pt_BR',
         listenOptions: SpeechListenOptions(
           cancelOnError: true,
           partialResults: false,
@@ -107,6 +108,7 @@ class SpeechRecognitionBloc
   ) async {
     try {
       await _speechToText.stop();
+
       emit(
         state.copyWith(
           isListening: false,
@@ -185,8 +187,8 @@ class SpeechRecognitionBloc
   }
 
   @override
-  Future<void> close() {
-    _speechToText.stop();
+  Future<void> close() async {
+    await _speechToText.stop();
     return super.close();
   }
 }
