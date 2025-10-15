@@ -131,12 +131,12 @@ class SpeechRecognitionBloc
     SpeechResultEvent event,
     Emitter<SpeechRecognitionState> emit,
   ) {
-    final result =
+    final List<RecognizedWordsModel> result =
         event.result.alternates
-            .where((res) => res.isConfident())
+            .where((res) => res.isConfident(threshold: 0.7))
             .map(
               (res) => RecognizedWordsModel(
-                words: res.recognizedWords,
+                words: res.recognizedWords.toLowerCase(),
                 confidence: res.confidence,
               ),
             )
