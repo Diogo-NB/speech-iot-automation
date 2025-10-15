@@ -1,19 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:speech_iot_app/src/core/app_config/app_config_cubit.dart';
+import 'package:speech_iot_app/src/core/app_config/app_config.dart';
 import 'package:speech_iot_app/src/features/settings/application/bloc/settings_bloc.dart';
 import 'package:speech_iot_app/src/features/settings/application/bloc/settings_event.dart';
 import 'package:speech_iot_app/src/features/settings/application/bloc/settings_state.dart';
 
 @RoutePage()
-class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
-  SettingsScreen({super.key});
-
-  final _formKey = GlobalKey<FormState>();
-
-  final _hostController = TextEditingController();
-  final _portController = TextEditingController();
+class SettingsScreen extends StatefulWidget implements AutoRouteWrapper {
+  const SettingsScreen({super.key});
 
   @override
   Widget wrappedRoute(BuildContext context) {
@@ -21,6 +16,32 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
       create: (_) => SettingsBloc(appConfig: context.read<AppConfig>()),
       child: this,
     );
+  }
+
+  @override
+  State<SettingsScreen> createState() => _SettingsScreenState();
+}
+
+class _SettingsScreenState extends State<SettingsScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  final _hostController = TextEditingController();
+  final _portController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final bloc = context.read<SettingsBloc>();
+      final initialAuthoritySplit = bloc.state.baseUrlAuthority.split(':');
+
+      _hostController.text = initialAuthoritySplit.first;
+
+      if (initialAuthoritySplit.length > 1) {
+        _portController.text = initialAuthoritySplit[1];
+      }
+    });
   }
 
   @override

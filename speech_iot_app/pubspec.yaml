@@ -17,6 +17,7 @@ dependencies:
   auto_route: ^10.1.2
   http: ^1.5.0
   bloc_concurrency: ^0.2.5
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

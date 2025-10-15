@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:speech_iot_app/src/core/app_config/app_config_cubit.dart';
+import 'package:speech_iot_app/src/core/app_config/app_config.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/data/recognized_speech_result_dto.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/data/speech_recognition_websocket_service.dart';
 import 'package:speech_iot_app/src/features/speech_recognition/domain/recognized_words_model.dart';

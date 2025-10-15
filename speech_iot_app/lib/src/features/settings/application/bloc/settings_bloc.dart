@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:speech_iot_app/src/core/app_config/app_config_cubit.dart';
+import 'package:speech_iot_app/src/core/app_config/app_config.dart';
 import 'package:speech_iot_app/src/core/utils/bloc_event_transformers.dart';
 import 'settings_event.dart';
 import 'settings_state.dart';
@@ -10,7 +10,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc({required AppConfig appConfig})
     : _appConfig = appConfig,
-      super(SettingsState()) {
+      super(SettingsState(baseUrlAuthority: appConfig.state.baseUrlAuthority)) {
     on<TestConnectivitySettings>(
       _onTestConnection,
       transformer: debounce(const Duration(milliseconds: 300)),
@@ -62,6 +62,9 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   void _onSaveSettings(SaveSettings event, Emitter<SettingsState> emit) {
     final authority = _buildAuthority(event.host, event.port);
-    _appConfig.updateConfig('ws://$authority', 'http://$authority');
+    _appConfig.updateConfig(
+      socketUrl: 'ws://$authority',
+      httpUrl: 'http://$authority',
+    );
   }
 }

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_iot_app/src/app/app_router.dart';
 import 'package:speech_iot_app/src/app/app_theme.dart';
 import 'package:speech_iot_app/src/app/di.dart';
 
 class App extends StatelessWidget {
-  App({super.key});
+  final SharedPreferencesWithCache prefs;
+
+  App({required this.prefs, super.key});
 
   final AppRouter _appRouter = AppRouter();
   final ThemeData _appTheme = AppTheme.light();
@@ -12,6 +15,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CoreScopeProvider(
+      prefs: prefs,
       child: DataScopeProvider(
         child: MaterialApp.router(
           routerConfig: _appRouter.config(),
