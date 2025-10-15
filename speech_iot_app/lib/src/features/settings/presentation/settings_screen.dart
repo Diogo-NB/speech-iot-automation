@@ -83,9 +83,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Host'),
                     validator: (value) {
+                      value = value?.trim();
+
                       if (value == null || value.isEmpty) {
                         return 'Campo obrigatório';
                       }
+
                       return null;
                     },
                   ),
