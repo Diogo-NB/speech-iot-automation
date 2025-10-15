@@ -1,32 +1,29 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-enum ConnectionStatus { initial, testing, success, failure }
+enum ConnectivityTestStatus { initial, inProgress, success, failure }
 
 @immutable
 final class SettingsState extends Equatable {
-  final String host;
-  final String port;
-  final ConnectionStatus status;
+  final String baseUrlAuthority;
+  final ConnectivityTestStatus connectivityTestStatus;
 
   const SettingsState({
-    this.host = '',
-    this.port = '',
-    this.status = ConnectionStatus.initial,
+    this.baseUrlAuthority = '',
+    this.connectivityTestStatus = ConnectivityTestStatus.initial,
   });
 
   SettingsState copyWith({
-    String? host,
-    String? port,
-    ConnectionStatus? status,
+    String? baseUrlAuthority,
+    ConnectivityTestStatus? connectivityTestStatus,
   }) {
     return SettingsState(
-      host: host ?? this.host,
-      port: port ?? this.port,
-      status: status ?? this.status,
+      baseUrlAuthority: baseUrlAuthority ?? this.baseUrlAuthority,
+      connectivityTestStatus:
+          connectivityTestStatus ?? this.connectivityTestStatus,
     );
   }
 
   @override
-  List<Object?> get props => [host, port, status];
+  List<Object?> get props => [baseUrlAuthority, connectivityTestStatus];
 }

@@ -8,7 +8,12 @@ import 'package:speech_iot_app/src/features/settings/application/bloc/settings_s
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
-  const SettingsScreen({super.key});
+  SettingsScreen({super.key});
+
+  final _formKey = GlobalKey<FormState>();
+
+  final _hostController = TextEditingController();
+  final _portController = TextEditingController();
 
   @override
   Widget wrappedRoute(BuildContext context) {
@@ -23,14 +28,20 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
     return Scaffold(
       appBar: AppBar(title: const Text('Configurações')),
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: BlocConsumer<SettingsBloc, SettingsState>(
           listener: (context, state) {
-            if (state.status == ConnectionStatus.success ||
-                state.status == ConnectionStatus.failure) {
-              final success = state.status == ConnectionStatus.success;
+            if (state.connectivityTestStatus ==
+                    ConnectivityTestStatus.success ||
+                state.connectivityTestStatus ==
+                    ConnectivityTestStatus.failure) {
+              final success =
+                  state.connectivityTestStatus ==
+                  ConnectivityTestStatus.success;
+
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
+                  duration: const Duration(seconds: 2),
                   content: Text(
                     success ? 'Conexão bem-sucedida!' : 'Falha na conexão',
                   ),
@@ -43,26 +54,48 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
             final bloc = context.read<SettingsBloc>();
 
             return Form(
+              key: _formKey,
               child: Column(
                 children: [
                   TextFormField(
-                    initialValue: state.host,
+                    controller: _hostController,
                     keyboardType: TextInputType.number,
                     decoration: const InputDecoration(labelText: 'Host'),
-                    onChanged: (v) => bloc.add(HostChangedEvent(v)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Campo obrigatório';
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
-                    initialValue: state.port,
+                    controller: _portController,
                     decoration: const InputDecoration(labelText: 'Porta'),
                     keyboardType: TextInputType.number,
-                    onChanged: (v) => bloc.add(PortChangedEvent(v)),
+                    validator: (value) {
+                      value = value?.trim();
+
+                      if (value == null || value.isEmpty) {
+                        return null;
+                      }
+
+                      final port = int.tryParse(value);
+
+                      if (port == null || port < 1 || port > 65535) {
+                        return 'Porta inválida';
+                      }
+
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 32),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton.icon(
-                      icon: state.status == ConnectionStatus.testing
+                      icon:
+                          state.connectivityTestStatus ==
+                              ConnectivityTestStatus.inProgress
                           ? const SizedBox(
                               height: 18,
                               width: 18,
@@ -70,13 +103,27 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                             )
                           : const Icon(Icons.wifi_tethering),
                       label: Text(
-                        state.status == ConnectionStatus.testing
+                        state.connectivityTestStatus ==
+                                ConnectivityTestStatus.inProgress
                             ? 'Testando...'
                             : 'Testar Conexão',
                       ),
-                      onPressed: state.status == ConnectionStatus.testing
+                      onPressed:
+                          state.connectivityTestStatus ==
+                              ConnectivityTestStatus.inProgress
                           ? null
-                          : () => bloc.add(TestConnectionRequestedEvent()),
+                          : () {
+                              if (_formKey.currentState!.validate() == true) {
+                                _formKey.currentState!.save();
+
+                                bloc.add(
+                                  TestConnectivitySettings(
+                                    host: _hostController.text.trim(),
+                                    port: _portController.text.trim(),
+                                  ),
+                                );
+                              }
+                            },
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -85,7 +132,25 @@ class SettingsScreen extends StatelessWidget implements AutoRouteWrapper {
                     child: OutlinedButton.icon(
                       icon: const Icon(Icons.save),
                       label: const Text('Salvar Configurações'),
-                      onPressed: () => bloc.add(SaveSettingsRequestedEvent()),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate() == true) {
+                          _formKey.currentState!.save();
+
+                          bloc.add(
+                            SaveSettings(
+                              host: _hostController.text.trim(),
+                              port: _portController.text.trim(),
+                            ),
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              duration: const Duration(seconds: 5),
+                              content: Text('Configurações salvas'),
+                            ),
+                          );
+                        }
+                      },
                     ),
                   ),
                 ],

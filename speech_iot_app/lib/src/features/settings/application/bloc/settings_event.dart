@@ -1,28 +1,30 @@
 import 'package:equatable/equatable.dart';
 
 sealed class SettingsEvent extends Equatable {
+  const SettingsEvent();
+
   @override
   List<Object?> get props => [];
 }
 
 final class InitializeEvent extends SettingsEvent {}
 
-final class HostChangedEvent extends SettingsEvent {
+final class TestConnectivitySettings extends SettingsEvent {
   final String host;
-  HostChangedEvent(this.host);
+  final String? port;
+
+  const TestConnectivitySettings({required this.host, this.port});
 
   @override
-  List<Object?> get props => [host];
+  List<Object?> get props => [host, port];
 }
 
-final class PortChangedEvent extends SettingsEvent {
-  final String port;
-  PortChangedEvent(this.port);
+final class SaveSettings extends SettingsEvent {
+  final String host;
+  final String? port;
+
+  const SaveSettings({required this.host, this.port});
 
   @override
-  List<Object?> get props => [port];
+  List<Object?> get props => [host, port];
 }
-
-final class TestConnectionRequestedEvent extends SettingsEvent {}
-
-final class SaveSettingsRequestedEvent extends SettingsEvent {}

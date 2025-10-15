@@ -10,62 +10,58 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc({required AppConfig appConfig})
     : _appConfig = appConfig,
-      super(
-        SettingsState(
-          host: appConfig.state.baseHttpUrl.host,
-          port: appConfig.state.baseHttpUrl.port.toString(),
-        ),
-      ) {
-    on<HostChangedEvent>(
-      (e, emit) => emit(state.copyWith(host: e.host)),
+      super(SettingsState()) {
+    on<TestConnectivitySettings>(
+      _onTestConnection,
       transformer: debounce(const Duration(milliseconds: 300)),
     );
-    on<PortChangedEvent>(
-      (e, emit) => emit(state.copyWith(port: e.port)),
+
+    on<SaveSettings>(
+      _onSaveSettings,
       transformer: debounce(const Duration(milliseconds: 300)),
     );
-    on<TestConnectionRequestedEvent>(_onTestConnection);
-    on<SaveSettingsRequestedEvent>(_onSaveSettings);
+  }
+
+  String _buildAuthority(String host, [String? port]) {
+    final hasPort = port?.isNotEmpty ?? false;
+    final authority = '$host${hasPort ? ':$port' : ''}';
+    return authority;
   }
 
   Future<void> _onTestConnection(
-    TestConnectionRequestedEvent event,
+    TestConnectivitySettings event,
     Emitter<SettingsState> emit,
   ) async {
-    emit(state.copyWith(status: ConnectionStatus.testing));
+    emit(
+      state.copyWith(connectivityTestStatus: ConnectivityTestStatus.inProgress),
+    );
+
+    final authority = _buildAuthority(event.host, event.port);
 
     try {
-      final host = state.host.trim();
-      final port = state.port.trim();
-
-      if (host.isEmpty || int.tryParse(port) == null) {
-        emit(state.copyWith(status: ConnectionStatus.failure));
-        return;
-      }
-
-      final uri = Uri.parse('http://$host:$port/health-check/');
-      final response = await http.get(uri).timeout(const Duration(seconds: 5));
+      final healthCheckUrl = Uri.parse('http://$authority/health-check/');
+      final response = await http
+          .get(healthCheckUrl)
+          .timeout(const Duration(seconds: 5));
 
       final success = response.statusCode == 200;
 
       emit(
         state.copyWith(
-          status: success ? ConnectionStatus.success : ConnectionStatus.failure,
+          connectivityTestStatus: success
+              ? ConnectivityTestStatus.success
+              : ConnectivityTestStatus.failure,
         ),
       );
     } catch (_) {
-      emit(state.copyWith(status: ConnectionStatus.failure));
+      emit(
+        state.copyWith(connectivityTestStatus: ConnectivityTestStatus.failure),
+      );
     }
   }
 
-  void _onSaveSettings(
-    SaveSettingsRequestedEvent event,
-    Emitter<SettingsState> emit,
-  ) {
-    final host = state.host.trim();
-    final port = state.port.trim();
-    final authority = '$host:$port';
-
-    _appConfig.updateUrls('ws://$authority', 'http://$authority');
+  void _onSaveSettings(SaveSettings event, Emitter<SettingsState> emit) {
+    final authority = _buildAuthority(event.host, event.port);
+    _appConfig.updateConfig('ws://$authority', 'http://$authority');
   }
 }

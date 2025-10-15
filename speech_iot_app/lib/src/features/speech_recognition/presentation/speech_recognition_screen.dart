@@ -49,7 +49,7 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             tooltip: 'Configurações',
-            onPressed: () => context.pushRoute(const SettingsRoute()),
+            onPressed: () => context.pushRoute(SettingsRoute()),
           ),
         ],
       ),
