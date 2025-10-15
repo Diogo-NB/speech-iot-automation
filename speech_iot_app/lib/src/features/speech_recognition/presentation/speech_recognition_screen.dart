@@ -48,7 +48,7 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
+            tooltip: 'Configurações',
             onPressed: () => context.pushRoute(const SettingsRoute()),
           ),
         ],
@@ -64,21 +64,21 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
         ),
         child: BlocBuilder<SpeechRecognitionBloc, SpeechRecognitionState>(
           builder: (context, state) {
-            String displayText;
-
-            switch (state.status) {
-              case SpeechRecognitionStatus.error:
-                displayText = 'Ocorreu um erro, tente novamente';
-                break;
-              case SpeechRecognitionStatus.done:
-                displayText = state.result.map((res) => res.words).join('\n');
-                break;
-              case SpeechRecognitionStatus.listening:
-                displayText = 'Ouvindo...';
-                break;
-              default:
-                displayText = 'Toque no microfone para começar';
-            }
+            final (
+              String displayText,
+              Color displayTextColor,
+            ) = switch (state.status) {
+              SpeechRecognitionStatus.error => (
+                'Ocorreu um erro, tente novamente',
+                Colors.red,
+              ),
+              SpeechRecognitionStatus.done => (
+                state.result.firstOrNull?.words ?? '',
+                Colors.black87,
+              ),
+              SpeechRecognitionStatus.listening => ('Ouvindo', Colors.black87),
+              _ => ('Toque no microfone para começar', Colors.black87),
+            };
 
             return Center(
               child: Padding(
@@ -108,7 +108,8 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
                         );
                       },
                       child: state.status == SpeechRecognitionStatus.listening
-                          ? const LoadingTextIndicator(
+                          ? LoadingTextIndicator(
+                              baseText: displayText,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w500,
@@ -117,16 +118,11 @@ class _SpeechRecognitionState extends State<SpeechRecognitionScreen> {
                             )
                           : Text(
                               displayText,
-                              key: ValueKey(displayText),
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.w500,
-                                color:
-                                    state.status ==
-                                        SpeechRecognitionStatus.error
-                                    ? Colors.red
-                                    : Colors.black87,
+                                color: displayTextColor,
                               ),
                             ),
                     ),

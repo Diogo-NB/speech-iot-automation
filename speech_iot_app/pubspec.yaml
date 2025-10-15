@@ -1,5 +1,5 @@
 name: speech_iot_app
-description: "A new Flutter project."
+description: "A speech recognition app for a simple iot automation"
 publish_to: "none"
 version: 0.1.0
 
@@ -16,6 +16,7 @@ dependencies:
   rxdart: ^0.28.0
   auto_route: ^10.1.2
   http: ^1.5.0
+  bloc_concurrency: ^0.2.5
 
 dev_dependencies:
   flutter_test:

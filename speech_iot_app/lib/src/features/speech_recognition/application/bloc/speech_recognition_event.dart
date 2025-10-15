@@ -37,10 +37,9 @@ class SpeechStatusEvent extends SpeechRecognitionEvent {
 
 class SpeechErrorEvent extends SpeechRecognitionEvent {
   final String error;
-  final bool isPermanent;
 
-  const SpeechErrorEvent({required this.error, required this.isPermanent});
+  const SpeechErrorEvent(this.error);
 
   @override
-  List<Object?> get props => [error, isPermanent];
+  List<Object?> get props => [error];
 }

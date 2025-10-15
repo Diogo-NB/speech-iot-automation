@@ -5,7 +5,6 @@ import 'package:speech_iot_app/src/features/speech_recognition/domain/recognized
 enum SpeechRecognitionStatus {
   unknown('unknown'),
   initialized('initialized'),
-  speechNotEnabled('speech_not_enabled'),
   listening('listening'),
   stopped('stopped'),
   done('done'),
